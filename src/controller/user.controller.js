@@ -16,11 +16,29 @@ const signUp = (req,res) => {
     })
 
     user.save().then( result => {
-        console.log(result)
-        res.status(200).json({
-            message: "Authentication successful",
-            data: result
-        })
+        if(result) {
+            const token = jwt.sign(
+                {
+                  email: result.email,
+                  id: result._id
+                },
+                  process.env.APP_SECRET,
+                {
+                  expiresIn: "1d"
+                }
+              );
+            return res.status(200).json({
+               message: 'User created successfully',
+               data: {
+                access_token: token,
+                user_Data: result
+               }
+            });
+        }
+        // res.status(200).json({
+        //     message: "Authentication successful",
+        //     data: result
+        // })
     })
     .catch(err => {
         return res.status(400).json({
