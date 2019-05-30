@@ -2,6 +2,7 @@ const User = require('../model/user.model.js');
 const Bcrypt = require("bcryptjs");
 const mongoose = require('mongoose')
 const jwt = require("jsonwebtoken");
+const socketData = require('../middleware/socket');
 // User signUp 
 
 const signUp = (req,res) => {
@@ -27,13 +28,15 @@ const signUp = (req,res) => {
                   expiresIn: "1d"
                 }
               );
-            return res.status(200).json({
+              socketData.socketNotify('newUser',result)
+              return res.status(200).json({
                message: 'User created successfully',
                data: {
                 access_token: token,
                 user_Data: result
                }
             });
+            
         }
         // res.status(200).json({
         //     message: "Authentication successful",
